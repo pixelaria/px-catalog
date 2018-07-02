@@ -1,0 +1,10 @@
+.test {
+	color:red !important;
+}
+
+.wp-list-table .column-cb { width: 5%; }
+.wp-list-table .column-name { width: 40%; }
+.wp-list-table .column-desc { width: 35%; }
+.wp-list-table .column-status { width: 20%; }
+.wp-list-table .column-status .dashicons { font-size:25px !important; }
+.column-status {padding:25px;}		
