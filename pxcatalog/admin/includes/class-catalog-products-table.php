@@ -3,7 +3,7 @@
 if ( ! class_exists( 'WP_List_Table' ) )
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
-class PX_Catalog_Vacancy_Table extends WP_List_Table {
+class PX_Catalog_Products_Table extends WP_List_Table {
 	var $items = array();
 	var $found_data = array();
 	
@@ -12,12 +12,11 @@ class PX_Catalog_Vacancy_Table extends WP_List_Table {
 	}
 
 	function no_items() {
-		_e( 'Вакансии отсутствуют.' );
+		_e( 'Резюме отсутствуют.' );
 	}
 	
 	function column_default( $item, $column_name ) {
 		switch( $column_name ) { 
-			case 'title':
 			case 'name':
 			case 'date':
 			case 'status':
@@ -29,7 +28,6 @@ class PX_Catalog_Vacancy_Table extends WP_List_Table {
 
 	function get_sortable_columns() {
 		$sortable_columns = array(
-			'title' => array('title',false),
 			'name'  => array('name',false),
 			'date'  => array('date',false),
 			'status'   => array('status',false)
@@ -40,7 +38,6 @@ class PX_Catalog_Vacancy_Table extends WP_List_Table {
 	function get_columns(){
 		$columns = array(
 			'cb'        => '<input type="checkbox" />',
-			'title' => 'Заголовок',
 			'name' => 'ФИО',
 			'date'    => 'Дата подачи',
 			'status'      => 'Статус'
@@ -54,24 +51,21 @@ class PX_Catalog_Vacancy_Table extends WP_List_Table {
 		return ( $order === 'asc' ) ? $result : -$result; // Send final sort direction to usort
 	}
 
-	function column_title($item) {
+	function column_name($item) {
 		if ($item['status'])
 			$actions = array(
-				'edit'      => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Редактировать</a>',$_REQUEST['page'],'edit',$item['id']),
-				'delete'    => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Удалить</a>',$_REQUEST['page'],'delete',$item['id']),
-				'unpublish'    => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Снять с публикации</a>',$_REQUEST['page'],'unpublish',$item['id']),
+				'edit'      => sprintf('<a href="?page=%s&action=%s&product=%s">Редактировать</a>',$_REQUEST['page'],'edit',$item['id']),
+				'delete'    => sprintf('<a href="?page=%s&action=%s&product=%s">Удалить</a>',$_REQUEST['page'],'delete',$item['id']),
+				'unpublish'    => sprintf('<a href="?page=%s&action=%s&product=%s">Снять с публикации</a>',$_REQUEST['page'],'unpublish',$item['id']),
 			);
 		else 
 			$actions = array(
-				'edit'      => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Редактировать</a>',$_REQUEST['page'],'edit',$item['id']),
-				'delete'    => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Удалить</a>',$_REQUEST['page'],'delete',$item['id']),
-				'publish'    => sprintf('<a href="?page=%s&action=%s&vacancy=%s">Опубликовать</a>',$_REQUEST['page'],'publish',$item['id']),
+				'edit'      => sprintf('<a href="?page=%s&action=%s&product=%s">Редактировать</a>',$_REQUEST['page'],'edit',$item['id']),
+				'delete'    => sprintf('<a href="?page=%s&action=%s&product=%s">Удалить</a>',$_REQUEST['page'],'delete',$item['id']),
+				'publish'    => sprintf('<a href="?page=%s&action=%s&product=%s">Опубликовать</a>',$_REQUEST['page'],'publish',$item['id']),
 			);
-		return sprintf('%1$s %2$s', $item['title'], $this->row_actions($actions) );
+		return sprintf('%1$s %2$s', $item['name'], $this->row_actions($actions) );
 	}
-
-
-
 	function get_bulk_actions() {
 		$actions = array(
 			'publish'	=> 'Опубликовать',
@@ -81,11 +75,11 @@ class PX_Catalog_Vacancy_Table extends WP_List_Table {
 		return $actions;
 	}
 	function column_cb($item) {
-		return sprintf('<input type="checkbox" name="vacancy[]" value="%s" />', $item['id']);    
+		return sprintf('<input type="checkbox" name="product[]" value="%s" />', $item['id']);    
 	}
 	function column_status($item) {
-		if ($item['status']) { $class="dashicons-no"; $func="publish"; $text="Опубликована";}
-		else { $class="dashicons-yes"; $func="unpublish"; $text="Снята с публикации";}
+		if ($item['status']) { $class="dashicons-no"; $func="publish"; $text="Опубликовано";}
+		else { $class="dashicons-yes"; $func="unpublish"; $text="Снято с публикации";}
 		return '<span>'.$text.'</span>';
 	}
 
