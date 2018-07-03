@@ -9,9 +9,7 @@ add_action('admin_menu', 'mt_add_pages');
 add_action('admin_enqueue_scripts', 'do_customs' );
 
 function do_customs() {
-    wp_enqueue_style( 'px_catalog_css',
-        PX_CATALOG_DIR. '/admin/css/plugin.css',
-        array(), "1.0.0", 'all' );
+    wp_enqueue_style( 'px_catalog_css',PX_CATALOG_DIR. '/admin/css/plugin.css',array(), "1.0.0", 'all' );
     wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js', false, '1.4.4');
     wp_enqueue_script('jquery');
 }
@@ -30,15 +28,15 @@ function mt_add_pages() {
         'px_category_page');
 
     
-    $vcard=add_submenu_page('px-catalog', 
-        'Резюме', 'Резюме', 
-        8, 'px-vcard', 
-        'px_vcard_page');
+    $product=add_submenu_page('px-catalog', 
+        'Товары', 'Товары', 
+        8, 'px-product', 
+        'px_product_page');
 
 
     //добавляем экшены
     add_action( 'load-' . $catagory, 'px_catalog_cats_prepare');
-    add_action( 'load-' . $vcard, 'px_vcard_prepare');
+    add_action( 'load-' . $product, 'px_product_prepare');
 }
 
 
@@ -137,13 +135,13 @@ function px_category_page() {
     }
 }
 
-function px_vcard_prepare() {
+function px_product_prepare() {
     $px_library=new PX_Library();
     
     $action=$_REQUEST['action'];
     if ($action == 'save') { //если у нас добавление новой или сохранение
 
-        $id = $_POST['vcard'];
+        $id = $_POST['product'];
 
         if ($id==-1) {
             $message='created';
@@ -152,125 +150,101 @@ function px_vcard_prepare() {
             $mesage='saved';
             $catInfo['status']=$_POST['status'];
         }
-        //заполняем NULL вместо ''
-        if ($_POST['marital'] === '-1') {$_POST['marital'] = 'NULL';} 
-        if ($_POST['childs'] === '-1') {$_POST['childs'] = 'NULL';}  
-
+        
         //фомрируем информацию о резюме
-        $vcardInfo = array(
-            'id' => $_POST['vcard'],
+        $product_info = array(
+            'id' => $_POST['product'],
             'name' => $_POST['uname'],
-            'photo' => $_POST['photo'],
-            'phone' => $_POST['uphone'],
-            'email' => $_POST['uemail'],
-            'address' => $_POST['address'],
+            'desc' => $_POST['desc'],
             'category' => $_POST['category'],
-            'experience' => $_POST['experience'],
-            'sex' => $_POST['sex'],
-            'age' => $_POST['age'],
-            'marital' => $_POST['marital'],
-            'childs' => $_POST['childs'],
-            'roadtime' => $_POST['roadtime'],
-            'worktime' => $_POST['worktime'],
+            'category' => $_POST['category'],
             'status' => $_POST['status'],
-            'date' => $_POST['date'],
-            'edu' => $_POST['edu'],
-
-            'languages' => $_POST['languages'],
-            'skills' => $_POST['skills'],
-            'drive' => $_POST['drive'],
-            'salary' => $_POST['salary'],
-            'sport' => $_POST['sport'],
-            'attitude' => $_POST['attitude'],
-            'hobby' => $_POST['hobby']
+            'date' => $_POST['date']
         );
         
-        $id=$px_library->saveVCard($vcardInfo); //сохраняем
+        $id=$px_library->saveProduct($product_info); //сохраняем
         
         $query = array(
             'message' => $mesage
         );
-       $redirect_to = add_query_arg( $query, menu_page_url( 'px-vcard', false ));
+
+       $redirect_to = add_query_arg( $query, menu_page_url( 'px-product', false ));
        wp_safe_redirect($redirect_to);
        exit();
+
     } else if ($action == 'delete') {
-        $id = $_REQUEST['vcard'];    
+        $id = $_REQUEST['product'];    
         
-        $px_library->deleteVcard($id);
+        $px_library->deleteProduct($id);
 
         $query = array(
             'message' => 'deleted'
         );
-        $redirect_to = add_query_arg( $query, menu_page_url( 'px-vcard', false ));
+        $redirect_to = add_query_arg( $query, menu_page_url( 'px-product', false ));
         wp_safe_redirect($redirect_to);
         exit();
+
     } else if ($action == 'publish') {
-        $id = $_REQUEST['vcard'];    
-        $px_library->setVcardStatus(1,$id); 
+        $id = $_REQUEST['product'];    
+        $px_library->setProductStatus(1,$id); 
          $query = array(
             'message' => 'published'
         );
-        $redirect_to = add_query_arg( $query, menu_page_url( 'px-vcard', false ));
+        $redirect_to = add_query_arg( $query, menu_page_url( 'px-product', false ));
         wp_safe_redirect($redirect_to);
+
     } else if ($action == 'unpublish') {
-        $id = $_REQUEST['vcard'];    
-        $px_library->setVcardStatus(0,$id);
+        $id = $_REQUEST['product'];    
+        $px_library->setProductStatus(0,$id);
          $query = array(
             'message' => 'unpublished'
         );
-        $redirect_to = add_query_arg( $query, menu_page_url( 'px-vcard', false ));
+        $redirect_to = add_query_arg( $query, menu_page_url( 'px-product', false ));
         wp_safe_redirect($redirect_to); 
     }
 }
 
-function px_vcard_page() {
+function px_product_page() {
     wp_enqueue_media();
 
     $px_library=new PX_Library();
     $action=$_REQUEST['action'];
     
-    $roadtime=$px_library->get_roadtime();
     $categories=$px_library->getCategories();
-    $educations=$px_library->getEducations();
     
     if ($action == 'add') {
-        $vcard=-1;
-        include PX_CATALOG_DIR . '/admin/includes/vcard-form.php';
+        $product=-1;
+        include PX_CATALOG_DIR . '/admin/includes/product-form.php';
     } else if ($action == 'edit') {
-        $vcard=$_REQUEST['vcard']; //получаем идентификатор категории
-        $data=$px_library->getVCardInfo($vcard); //получаем информацию о категории
-        
-        include PX_CATALOG_DIR . '/admin/includes/vcard-form.php';
+        $product=$_REQUEST['product']; //получаем идентификатор категории
+        $data=$px_library->getProductInfo($product); //получаем информацию о категории
+        include PX_CATALOG_DIR . '/admin/includes/product-form.php';
     } else {
-        echo '<h2> Резюме';
-        echo ' <a href="' . esc_url(menu_page_url( 'px-vcard', false )."&action=add") . '" class="add-new-h2">Добавить новое резюме</a>';
+        echo '<h2> Продукт';
+        echo ' <a href="' . esc_url(menu_page_url( 'px-product', false )."&action=add") . '" class="add-new-h2">Добавить новый продукт</a>';
         echo '</h2>';
         echo '<form  method="get">';
         $px_library=new PX_Library();
-        if (!class_exists( 'PX_Catalog_VCards_Table' ) ) {
-            require_once PX_CATALOG_DIR . '/admin/includes/class-catalog-vcards-table.php';
+        if (!class_exists( 'PX_Catalog_Product_Table' ) ) {
+            require_once PX_CATALOG_DIR . '/admin/includes/class-catalog-products-table.php';
         } 
-        $table = new PX_Catalog_VCards_Table();
-        $table->set_items($px_library->getVCards());
+        $table = new PX_Catalog_Products_Table();
+        $table->set_items($px_library->getProducts());
         $table->prepare_items();
         $table->display();
         echo '</form>';
     }
 }
 
-function add_new_link() {
-   
-}
-
 function add_message() {
     if ($message=='saved') $msg='Категория сохранена';
     else if ($message=='created') $msg='Категория создана';
     echo '<div class="updated notice notice-success is-dismissible below-h2" id="message">
-            <p>'.$msg.'</p>
-            <button class="notice-dismiss" type="button">
-                <span class="screen-reader-text">Скрыть это уведомление.</span>
-            </button>
-        </div>';
+        <p>'.$msg.'</p>
+        <button class="notice-dismiss" type="button">
+            <span class="screen-reader-text">Скрыть это уведомление.</span>
+        </button>
+    </div>';
 }
 
 
