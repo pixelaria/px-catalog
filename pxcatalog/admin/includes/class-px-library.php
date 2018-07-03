@@ -20,9 +20,9 @@
 		public function saveCategory($data) {
 			global $wpdb,$table_prefix;
 			if ($data['id']==-1)  //создание
-				$query="INSERT INTO ".$table_prefix."px_category(`name`, `desc`, `status`) VALUES ('".$data['name']."','".$data['desc']."',1)";
+				$query="INSERT INTO ".$table_prefix."px_category(`name`, `description`, `status`) VALUES ('".$data['name']."','".$data['description']."',1)";
 			else  //редактирование
-				$query="UPDATE pri_px_category SET `name` = '".$data['name']."', `desc` = '".$data['desc']."' WHERE id=".$data['id'];
+				$query="UPDATE pri_px_category SET `name` = '".$data['name']."', `description` = '".$data['description']."' WHERE id=".$data['id'];
 			$wpdb->query($query); //выполняем запрос
 			if ($data['id']==-1) return $wpdb->insert_id;
 			else return $data['id'];
