@@ -68,20 +68,21 @@ if ($type)
 	}
 	';
 echo '</style>';?>
+
 <div class="wrap">
 	<?php 
 		if ($action==='add') {
-			echo '<h1>Добавление нового резюме</h1>';
+			echo '<h1>Добавление нового товара</h1>';
 		} else {
-			echo '<h1>Редактирование резюме</h1>';
+			echo '<h1>Редактирование товара</h1>';
 		}
 	?>
 	<?php
 		if ($type)
-			$link='/prisluga/vcardform/';
+			$link='productform/';
 		else 
-			$link = esc_url( add_query_arg( array( 'vcard' => $vcard ), menu_page_url( 'px-vcard', false ) ) );
-		echo '<form id="vcard" method="post" action="'.$link.'" name="vacancy">';
+			$link = esc_url( add_query_arg( array( 'product' => $product ), menu_page_url( 'px-product', false ) ) );
+		echo '<form id="product" method="post" action="'.$link.'" name="vacancy">';
 	?>
 	<?php if ($type && ($id>0)) { 
 			echo '<div id="message" class="notice success">
@@ -347,7 +348,7 @@ echo '</style>';?>
 		<input type="hidden" name="action" value="save">
 		<?php if (!$type) { ?>
 			<input type="hidden" name="status" id="status" value="<?php echo $data['status'];?>">
-			<input type="hidden" name="vcard" value="<?php echo $vcard; ?>">
+			<input type="hidden" name="product" value="<?php echo $product; ?>">
 		<?php } else { ?>
 			<div class="col-xs-6"></div>
 			<div class="col-xs-6">
@@ -397,11 +398,11 @@ jQuery(function($) {
 			$('#status').val(0);
 		else 
 			$('#status').val(1);
-		$('#vcard').submit();
+		$('#product').submit();
 	});
 
 
-	$("#vcard").submit(function(e) {
+	$("#product").submit(function(e) {
 		if (!checkFields()) { //если что-то не ввели, то не отправляем форму
     		e.preventDefault();
     		showError();
@@ -457,7 +458,7 @@ jQuery(function($) {
 					'</button>'+
 				'</div>';
 		if (!$("#message" ).length) { //проверяем - нет ли уже сообщения
-			$('#vcard').prepend(html);	 
+			$('#product').prepend(html);	 
 		}
 	}
 	function recaptchaCallback() {

@@ -18,7 +18,7 @@ class PX_Catalog_Products_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch( $column_name ) { 
 			case 'name':
-			case 'date':
+			case 'category':
 			case 'status':
 				return $item[ $column_name ];
 			default:
@@ -29,7 +29,7 @@ class PX_Catalog_Products_Table extends WP_List_Table {
 	function get_sortable_columns() {
 		$sortable_columns = array(
 			'name'  => array('name',false),
-			'date'  => array('date',false),
+			'category'  => array('category',false),
 			'status'   => array('status',false)
 		);
 		return $sortable_columns;
@@ -38,8 +38,8 @@ class PX_Catalog_Products_Table extends WP_List_Table {
 	function get_columns(){
 		$columns = array(
 			'cb'        => '<input type="checkbox" />',
-			'name' => 'ФИО',
-			'date'    => 'Дата подачи',
+			'name' => 'Название',
+			'category'    => 'Категория',
 			'status'      => 'Статус'
 		);
 		return $columns;
